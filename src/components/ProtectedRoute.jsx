@@ -1,0 +1,36 @@
+import { useAuth } from "../context/AuthContext";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { isAuthenticated } from "../utils/auth";
+
+const ProtectedRoute = () => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="p-6 flex justify-center items-center ">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
+          </div>
+          <p className="mt-2 text-lg font-medium text-gray-700">
+            Authenticating...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (!isAuthenticated()) {
+    // Redirect to login page, saving the current location
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <Outlet />;
+};
+
+export default ProtectedRoute;
