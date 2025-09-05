@@ -3,7 +3,7 @@ import { LockClosedIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { isAuthenticated } from "../utils/auth";
-import config from "../config";
+import apiClient from "../utils/apiClient";
 import { useAuth } from "../context/AuthContext";
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -27,23 +27,12 @@ const Login = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+      const response = await apiClient.post("api/auth/login", {
+        email,
+        password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
-      }
+      const data = response.data;
 
       // Store the token
       localStorage.setItem("authToken", data.access_token);
@@ -52,7 +41,11 @@ const Login = () => {
       // Redirect to dashboard or intended page
       navigate("/");
     } catch (err) {
-      setError(err.message || "An error occurred during login");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "An error occurred during login"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +56,7 @@ const Login = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {/* logo image circular */}
-          <div className="flex justify-center items-center mb-6 bg-yellow-100 w-14 h-14 rounded-full p-2  m-auto">
+          <div className="flex justify-center items-center mb-6 bg-yellow-100 h-[70px] w-[70px] rounded-full p-2 m-auto">
             <img className="" src={logo} alt="WeCare Logo" />
           </div>
           <div className="sm:mx-auto sm:w-full sm:max-w-md">

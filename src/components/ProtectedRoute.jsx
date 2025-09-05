@@ -1,10 +1,19 @@
 import { useAuth } from "../context/AuthContext";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { isAuthenticated } from "../utils/auth";
+import { isAuthenticated, isTokenExpiring, getAuthToken } from "../utils/auth";
+import { useEffect } from "react";
 
 const ProtectedRoute = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, checkAndRefreshToken } = useAuth();
   const location = useLocation();
+
+  // Check and refresh token on route change if needed
+  useEffect(() => {
+    const token = getAuthToken();
+    if (token && isTokenExpiring(token)) {
+      checkAndRefreshToken();
+    }
+  }, [location.pathname, checkAndRefreshToken]);
 
   if (loading) {
     return (

@@ -22,7 +22,7 @@ export default function Notifications() {
       try {
         const token = localStorage.getItem("authToken");
         const response = await fetch(
-          `${config.apiBaseUrl}api/employee/notifications/`,
+          `${config.apiBaseUrl}api/employee/notifications`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -1,3 +1,4 @@
+import DashboardProvider from "../context/DashboardContext";
 import DashboardHeader from "../components/Dashboard/DashboardHeader";
 import DashboardStats from "../components/Dashboard/DashboardStats";
 import RevenueChart from "../components/Dashboard/RevenueChart";
@@ -8,27 +9,29 @@ import AccountManagersPerformance from "../components/Dashboard/AccountManagersP
 
 const Dashboard = () => {
   return (
-    <div>
-      <DashboardHeader />
-      <div className="mt-6">
-        <DashboardStats />
-      </div>
-      <div className="flex md:flex-row flex-col items-center gap-5 mt-6">
-        <div className="w-full sm:w-[90%] md:w-[48%] lg:w-[40%] h-[400px]">
-          <RevenueChart />
+    <DashboardProvider>
+      <div>
+        <DashboardHeader />
+        <div className="mt-6">
+          <DashboardStats />
         </div>
-        <div className="w-full sm:w-[90%] md:w-[48%] lg:w-[58%] h-[400px]">
-          <SourcesActivityChart />
+        <div className="flex md:flex-row flex-col items-center gap-5 mt-6">
+          <div className="w-full sm:w-[90%] md:w-[48%] lg:w-[40%] h-[400px]">
+            <RevenueChart />
+          </div>
+          <div className="w-full sm:w-[90%] md:w-[48%] lg:w-[58%] h-[400px]">
+            <SourcesActivityChart />
+          </div>
+          <div className="w-full sm:w-[90%] md:w-[48%] lg:w-[40%] h-[400px]">
+            <OccupancyChart />
+          </div>
         </div>
-        <div className="w-full sm:w-[90%] md:w-[48%] lg:w-[40%] h-[400px]">
-          <OccupancyChart />
+        <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2">
+          <ExpiringContracts />
+          <AccountManagersPerformance />
         </div>
       </div>
-      <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2">
-        <ExpiringContracts />
-        <AccountManagersPerformance />
-      </div>
-    </div>
+    </DashboardProvider>
   );
 };
 

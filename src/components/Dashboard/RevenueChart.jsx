@@ -8,55 +8,50 @@ import {
   Area,
   AreaChart,
 } from "recharts";
-import { 
-  CurrencyDollarIcon,
-} from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
-import config from "../../config"
+import { CurrencyDollarIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
+import { useRevenueStats } from "../../hooks/useDashboard";
+
 const RevenueChart = () => {
-  const [revenueData, setRevenueData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const {
+    data: revenueData,
+    loading,
+    error,
+    isRefetching,
+    refetch,
+  } = useRevenueStats({
+    onError: (error) => {
+      console.error("Revenue chart error:", error);
+    },
+    onSuccess: () => {
+      console.log("Revenue data loaded successfully");
+    },
+  });
 
-  useEffect(() => {
-    const fetchRevenueData = async () => {
-      try {
-        const authToken = localStorage.getItem('authToken');
-        if (!authToken) {
-          throw new Error('No authentication token found');
-        }
-
-        const response = await fetch(`${config.apiBaseUrl}api/dashboardCharts`, {
-          headers: {
-            'Authorization': `Bearer ${authToken}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch revenue data');
-        }
-
-        const data = await response.json();
-        setRevenueData(data.revenue_stats);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRevenueData();
-  }, []);
+  // Handle manual refresh
+  const handleRefresh = () => {
+    refetch();
+  };
 
   if (loading) {
     return (
       <div className="flex flex-col p-6 h-full bg-white rounded-2xl border border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="rounded-full w-[40px] h-[40px] bg-[#fcf6ea] flex items-center justify-center text-amber-500">
-            <CurrencyDollarIcon className="h-7 w-7" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="rounded-full w-[40px] h-[40px] bg-[#fcf6ea] flex items-center justify-center text-amber-500">
+              <CurrencyDollarIcon className="h-7 w-7" />
+            </div>
+            <h3 className="text-[20px] font-medium">Revenue</h3>
           </div>
-          <h3 className="text-[20px] font-medium">Revenue</h3>
+          <button
+            onClick={handleRefresh}
+            disabled={loading || isRefetching}
+            className="inline-flex items-center px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+          >
+            <ArrowPathIcon
+              className={`h-3 w-3 mr-1 ${isRefetching ? "animate-spin" : ""}`}
+            />
+            Refresh
+          </button>
         </div>
         <div className="mt-4 h-[200px] w-full bg-gray-100 rounded-lg animate-pulse"></div>
       </div>
@@ -66,11 +61,23 @@ const RevenueChart = () => {
   if (error) {
     return (
       <div className="flex flex-col p-6 h-full bg-white rounded-2xl border border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="rounded-full w-[40px] h-[40px] bg-[#fcf6ea] flex items-center justify-center text-amber-500">
-            <CurrencyDollarIcon className="h-7 w-7" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="rounded-full w-[40px] h-[40px] bg-[#fcf6ea] flex items-center justify-center text-amber-500">
+              <CurrencyDollarIcon className="h-7 w-7" />
+            </div>
+            <h3 className="text-[20px] font-medium">Revenue</h3>
           </div>
-          <h3 className="text-[20px] font-medium">Revenue</h3>
+          <button
+            onClick={handleRefresh}
+            disabled={loading || isRefetching}
+            className="inline-flex items-center px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+          >
+            <ArrowPathIcon
+              className={`h-3 w-3 mr-1 ${isRefetching ? "animate-spin" : ""}`}
+            />
+            Retry
+          </button>
         </div>
         <div className="mt-4 text-red-500">Error: {error}</div>
       </div>
@@ -80,11 +87,23 @@ const RevenueChart = () => {
   if (!revenueData) {
     return (
       <div className="flex flex-col p-6 h-full bg-white rounded-2xl border border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="rounded-full w-[40px] h-[40px] bg-[#fcf6ea] flex items-center justify-center text-amber-500">
-            <CurrencyDollarIcon className="h-7 w-7" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="rounded-full w-[40px] h-[40px] bg-[#fcf6ea] flex items-center justify-center text-amber-500">
+              <CurrencyDollarIcon className="h-7 w-7" />
+            </div>
+            <h3 className="text-[20px] font-medium">Revenue</h3>
           </div>
-          <h3 className="text-[20px] font-medium">Revenue</h3>
+          <button
+            onClick={handleRefresh}
+            disabled={loading || isRefetching}
+            className="inline-flex items-center px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+          >
+            <ArrowPathIcon
+              className={`h-3 w-3 mr-1 ${isRefetching ? "animate-spin" : ""}`}
+            />
+            Retry
+          </button>
         </div>
         <div className="mt-4">No revenue data available</div>
       </div>
@@ -92,18 +111,34 @@ const RevenueChart = () => {
   }
 
   const isPositive = revenueData.percentage_change >= 0;
-  const chartData = revenueData.last_8_months.map(item => ({
+  const chartData = revenueData.last_8_months.map((item) => ({
     name: item.name,
-    value: parseFloat(item.value) || 0 // Ensure numeric values and handle zeros
+    value: parseFloat(item.value) || 0, // Ensure numeric values and handle zeros
   }));
 
   return (
-    <div className="flex flex-col p-6 h-full bg-white rounded-2xl border border-gray-200">
-      <div className="flex items-center gap-3">
-        <div className="rounded-full w-[40px] h-[40px] bg-[#fcf6ea] flex items-center justify-center text-amber-500">
-          <CurrencyDollarIcon className="h-7 w-7" />
+    <div
+      className={`flex flex-col p-6 h-full bg-white rounded-2xl border border-gray-200 ${
+        isRefetching ? "opacity-75" : ""
+      }`}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="rounded-full w-[40px] h-[40px] bg-[#fcf6ea] flex items-center justify-center text-amber-500">
+            <CurrencyDollarIcon className="h-7 w-7" />
+          </div>
+          <h3 className="text-[20px] font-medium">Revenue</h3>
         </div>
-        <h3 className="text-[20px] font-medium">Revenue</h3>
+        <button
+          onClick={handleRefresh}
+          disabled={loading || isRefetching}
+          className="inline-flex items-center px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+        >
+          <ArrowPathIcon
+            className={`h-3 w-3 mr-1 ${isRefetching ? "animate-spin" : ""}`}
+          />
+          {isRefetching ? "Refreshing..." : "Refresh"}
+        </button>
       </div>
 
       <div className="mt-4">
@@ -152,7 +187,10 @@ const RevenueChart = () => {
             />
             <YAxis hide={true} />
             <Tooltip
-              formatter={(value) => [`${parseFloat(value).toLocaleString()} AED`, "Revenue"]}
+              formatter={(value) => [
+                `${parseFloat(value).toLocaleString()} AED`,
+                "Revenue",
+              ]}
               labelFormatter={(label) => `Month: ${label}`}
               contentStyle={{
                 borderRadius: "8px",
