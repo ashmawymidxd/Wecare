@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 /**
  * Performance monitoring utility for dashboard components
  */
@@ -103,23 +101,14 @@ class PerformanceMonitor {
 
   /**
    * Monitor React component render performance
+   * Note: This method should be implemented in a .jsx file if needed
    */
-  withComponentTiming(Component, componentName) {
-    return function WrappedComponent(props) {
-      const monitor = usePerformanceMonitor();
-
-      useEffect(() => {
-        monitor.startTiming(`${componentName}-render`);
-        return () => {
-          monitor.endTiming(`${componentName}-render`);
-        };
-      });
-
-      return <Component {...props} />;
+  measureComponentRender(componentName) {
+    this.startTiming(`${componentName}-render`);
+    return () => {
+      this.endTiming(`${componentName}-render`);
     };
-  }
-
-  /**
+  }  /**
    * Monitor API call performance
    */
   wrapApiCall(apiFunction, operationName) {
@@ -185,10 +174,12 @@ export const usePerformanceMonitor = () => {
 };
 
 /**
- * HOC for monitoring component performance
+ * Utility for measuring component render performance
+ * Usage: const cleanup = measureComponentPerformance('ComponentName');
+ * Call cleanup() when component unmounts
  */
-export const withPerformanceMonitoring = (Component, componentName) => {
-  return performanceMonitor.withComponentTiming(Component, componentName);
+export const measureComponentPerformance = (componentName) => {
+  return performanceMonitor.measureComponentRender(componentName);
 };
 
 export default performanceMonitor;
