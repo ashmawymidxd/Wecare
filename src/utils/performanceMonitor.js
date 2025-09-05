@@ -108,7 +108,8 @@ class PerformanceMonitor {
     return () => {
       this.endTiming(`${componentName}-render`);
     };
-  }  /**
+  }
+  /**
    * Monitor API call performance
    */
   wrapApiCall(apiFunction, operationName) {
