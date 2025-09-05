@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BellIcon } from "@heroicons/react/24/outline";
-import config from "../config";
+import config from "../config"
 
 const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
