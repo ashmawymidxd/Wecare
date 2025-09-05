@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BellIcon } from "@heroicons/react/24/outline";
-import config from "../config";
+import config from "../config"
 
 const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,7 +44,7 @@ const NotificationDropdown = () => {
     try {
       const token = localStorage.getItem("authToken");
       await fetch(
-        `http://127.0.0.1:8000/api/employee/notifications/${id}/mark-as-read`,
+        `${config.apiBaseUrl}api/employee/notifications/${id}/mark-as-read`,
         {
           method: "POST",
           headers: {
